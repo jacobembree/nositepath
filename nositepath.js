@@ -9,20 +9,23 @@ if (!Drupal.settings.site_path || Drupal.settings.site_path == '') {
 }
 
 /**
- * Implements hook_deviceready().
+ * Implements hook_device_offline().
  */
-function nositepath_deviceready() {
+function nositepath_device_offline() {
   try {
-    // Get a URL from the user if no site_path has been set yet.
-    if (Drupal.settings.site_path == nositepath_temp_path) {
-      // As we're only part-way through hook_deviceready, it seems not to work
-      // to redirect to the nositepath form here. Instead, we just prompt for
-      // the URL.
-      var site_path = window.prompt('Drupal URL:', nositepath_temp_path);
-      nositepath_reconnect(site_path);
+    try {
+      var redirect = drupalgap.settings.nositepath.offline_redirect;
+      if (empty(redirect)) {
+        redirect = 'nositepath';
+      }
     }
-  } catch (error) {
-    console.log('nositepath_deviceready - ' + error);
+    catch (TypeError) {
+      var redirect = 'nositepath';
+    }
+    drupalgap_goto(redirect);
+  }
+  catch (error) {
+    console.log('nositepath_device_offline - ' + error);
   }
 }
 
